@@ -212,9 +212,9 @@
 
 /* MACRO defines for TDD DL-UL Configuration */
 #define NUM_DL_SLOTS 7
-#define NUM_DL_SYMBOLS 12 
+#define NUM_DL_SYMBOLS 6 
 #define NUM_UL_SLOTS 2
-#define NUM_UL_SYMBOLS 1
+#define NUM_UL_SYMBOLS 4
 #define GUARD_SLOT_IDX 7
 
 /* MACRO defines for SRC config */

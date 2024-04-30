@@ -2117,7 +2117,19 @@ uint8_t lwr_mac_procConfigReqEvt(void *msg)
    memset(configReq, 0, sizeof(fapi_config_req_t));
    fillMsgHeader(&configReq->header, FAPI_CONFIG_REQUEST, sizeof(fapi_config_req_t));
 
-   configReq->number_of_tlvs = 26;
+/* ======== small cell integration ======== */
+#ifdef NFAPI
+   #ifdef NR_TDD
+      configReq->number_of_tlvs = 28;
+      configReq->number_of_tlvs = 28 + 140;
+   #else
+      configReq->number_of_tlvs = 26;
+   #endif
+#else
+   configReq->number_of_tlvs = 24;
+#endif 
+/* ======================================== */
+
    msgLen = sizeof(configReq->number_of_tlvs);
 
    fillTlvs(&configReq->tlvs[index++], FAPI_DL_BANDWIDTH_TAG,           \

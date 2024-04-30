@@ -5959,7 +5959,6 @@ uint16_t OAI_OSC_fillDlTtiReq(SlotTimingInfo currTimingInfo)
 #ifdef ODU_SLOT_IND_DEBUG_LOG
          DU_LOG("\nDEBUG  -->  LWR_MAC: Sending DL TTI Request");
 #endif
-         int retval = nfapi_vnf_p7_nr_dl_config_req(p7_config, dlTtiReq);
          /* OAI L1 expects UL_TTI.request following DL_TTI.request */
          //TODO: OAI_OSC_fillUlTtiReq done
          OAI_OSC_fillUlTtiReq(currTimingInfo);

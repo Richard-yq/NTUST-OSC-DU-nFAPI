@@ -64,13 +64,14 @@
 /* ======== small cell integration ======== */
 #ifdef NFAPI
    #ifdef NR_TDD
-      // For band 78 FDD
+      // For band 78 TDD
       #define DUPLEX_MODE DUP_MODE_TDD
+      #define NR_NUMEROLOGY 1
       #define NR_DL_ARFCN 640008 //OAI 640008
       #define NR_UL_ARFCN 640008 //OAI 640008
       #define NR_FREQ_BAND 78
       #define NR_SCS SCS_30KHZ
-      #define NR_BANDWIDTH BANDWIDTH_100MHZ
+      #define NR_BANDWIDTH BANDWIDTH_40MHZ //OAI
       #define NR_DL_FREQ 3600120 //kHz
       #define NR_UL_FREQ 3600120 //kHz
    #else
@@ -113,7 +114,13 @@
 #define SSB_PBCH_PWR 0
 #define BCH_PAYLOAD PHY_GEN_TIMING_PBCH_BIT
 #define NORMAL_CYCLIC_PREFIX 0
+/* ======== small cell integration ======== */
+#ifdef NFAPI
+#define OFFSET_TO_POINT_A 86                     /* PRB Offset to Point A OAI */
+#else 
 #define OFFSET_TO_POINT_A 24                     /* PRB Offset to Point A */
+#endif
+/* ======================================== */
 #define BETA_PSS BETA_PSS_0DB  
 #define SSB_PERIODICITY 20
 #define SSB_SUBCARRIER_OFFSET 0         
@@ -131,7 +138,11 @@
 #ifndef NR_TDD
 #define PRACH_CONFIG_IDX   16
 #else
-#define PRACH_CONFIG_IDX   88
+   #ifdef NFAPI
+      #define PRACH_CONFIG_IDX   98
+   #else
+      #define PRACH_CONFIG_IDX   88
+   #endif
 #endif
 #define PRACH_MAX_PRB  24  /* As per (spec 38.211-Table 6.3.3.2-1), max allocated PRBs can go upto 24 */
 #define PRACH_FREQ_START  (MAX_NUM_RB - PRACH_MAX_PRB) /* In order to allocate PRACH from end of the resource grid */
@@ -139,12 +150,22 @@
 #define PRACH_SUBCARRIER_SPACING NR_SCS
 #define PRACH_RESTRICTED_SET_CFG 0
 #define NUM_PRACH_FDM 1
-#define ROOT_SEQ_IDX 0
-#define NUM_ROOT_SEQ 1
-#define ZERO_CORRELATION_ZONE_CFG 4
+      #ifdef NFAPI
+         #define ROOT_SEQ_IDX 1
+         #define NUM_ROOT_SEQ 16
+         #define ZERO_CORRELATION_ZONE_CFG 13
+      #else
+         #define ROOT_SEQ_IDX 0
+         #define NUM_ROOT_SEQ 1
+         #define ZERO_CORRELATION_ZONE_CFG 4
+      #endif
 #define NUM_UNUSED_ROOT_SEQ 0
 #define UNUSED_ROOT_SEQ 1
+#ifdef NFAPI
+#define SSB_PER_RACH 3
+#else 
 #define SSB_PER_RACH 1
+#endif
 #define CB_PREAMBLE_PER_SSB 8
 #define PRACH_MULT_CARRIER_BAND FALSE
 #define PRACH_PREAMBLE_RCVD_TGT_PWR  -74   

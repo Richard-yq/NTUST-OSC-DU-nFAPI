@@ -636,6 +636,12 @@ uint8_t fillSchSib1Cfg(uint8_t mu, uint8_t bandwidth, uint8_t numSlots,SchPdcchC
             bwp->freqAlloc.numPrb = TOTAL_PRB_20MHZ_MU0;
 	 }
 	 break;
+/* ======== small cell integration ========*/
+      case BANDWIDTH_40MHZ:
+	 {
+            bwp->freqAlloc.numPrb = TOTAL_PRB_40MHZ_MU1;
+	 }
+/* ======================================== */
       case BANDWIDTH_100MHZ:
 	 {
             bwp->freqAlloc.numPrb = TOTAL_PRB_100MHZ_MU1;

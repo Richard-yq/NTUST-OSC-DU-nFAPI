@@ -1,5 +1,5 @@
 # Small Cell Integration Project
-This is the small cell integration project based on [OSC_DU_High_Rel-H](https://docs.o-ran-sc.org/projects/o-ran-sc-o-du-l2/en/latest/overview.html)
+This is the small cell integration project based on [OSC_DU_High_Rel-I](https://docs.o-ran-sc.org/projects/o-ran-sc-o-du-l2/en/latest/overview.html)
 
 
 ## Architecture
@@ -15,12 +15,12 @@ The main design of our work focuses on the VNF and scheduler embedded in MAC lay
 ```sh
 cd l2/build/odu
 #clean
-make clean_odu MACHINE=BIT64 MODE=FDD NFAPI=YES
-make clean_ric MACHINE=BIT64 MODE=FDD NFAPI=YES
+make clean_odu MACHINE=BIT64 MODE=TDD NFAPI=YES
+make clean_ric MACHINE=BIT64 MODE=TDD NFAPI=YES
 
 #compile
-make odu MACHINE=BIT64 MODE=FDD NFAPI=YES
-make ric_stub NODE=TEST_STUB MACHINE=BIT64 MODE=FDD NFAPI=YES
+make odu MACHINE=BIT64 MODE=TDD NFAPI=YES
+make ric_stub NODE=TEST_STUB MACHINE=BIT64 MODE=TDD NFAPI=YES
 ```
 
 ## Execution

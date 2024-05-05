@@ -2811,7 +2811,7 @@ static uint8_t unpack_nr_config_request(uint8_t **ppReadPackedMsg, uint8_t *end,
     uint8_t tagMatch = 0;
     uint8_t *pStartOfValue = 0;
     for (idx = 0; idx < sizeof(unpack_fns) / sizeof(unpack_tlv_t); ++idx) {
-      if (unpack_fns[idx].tag == generic_tl.tag) { // match the extracted tag value with all the tags in unpack_fn list
+            if (unpack_fns[idx].tag == generic_tl.tag) { // match the extracted tag value with all the tags in unpack_fn list
         pStartOfValue = *ppReadPackedMsg;
         tagMatch = 1;
         nfapi_tl_t *tl = (nfapi_tl_t *)(unpack_fns[idx].tlv);

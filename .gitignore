@@ -1,3 +1,5 @@
 openairinterface/
 l2/build/odu/bin/
 l2/build/odu/lib/odu/*.a
+l2/bin/odu/
+l2/build/odu/lib/

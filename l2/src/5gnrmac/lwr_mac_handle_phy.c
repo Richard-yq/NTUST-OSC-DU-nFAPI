@@ -184,6 +184,7 @@ uint8_t SCF_procSlotInd(NR_UL_IND_t *UL_INFO)
  * ****************************************************************/
 uint8_t SCF_procRxDataInd(nfapi_nr_rx_data_indication_t  *nfapiRxDataInd)
 {   
+   printf("INFO  -->  FUNC : %s", __FUNCTION__);
    Pst           pst;
    uint8_t       pduIdx =0;
    uint8_t       ret;
@@ -244,6 +245,7 @@ uint8_t SCF_procRxDataInd(nfapi_nr_rx_data_indication_t  *nfapiRxDataInd)
  * ****************************************************************/
 uint8_t SCF_procCrcInd(nfapi_nr_crc_indication_t  *nfapiCrcInd)
 {
+   printf("\nINFO  -->  FUNC : %s", __FUNCTION__);
    Pst           pst;
    uint8_t      crcInfoIdx, ret;
    uint8_t      crcStatusIdx;
@@ -289,6 +291,51 @@ uint8_t SCF_procCrcInd(nfapi_nr_crc_indication_t  *nfapiCrcInd)
    FILL_PST_LWR_MAC_TO_MAC(pst, EVENT_CRC_IND_TO_MAC);
    return (*sendCrcIndOpts[pst.selector])(&pst, crcInd);
 }
+/*******************************************************************
+ *
+ * @brief Fills Uci Ind Pdu Info carried on Pucch Format 0/Format 1 via nfapi
+ *
+ * @details
+ *
+ *    Function : OAI_OSC_fillUciIndPucchF0F1
+ *
+ *    Functionality:
+ *       Fills Uci Ind Pdu Info carried on Pucch Format 0/Format 1
+ *
+ *@params[in] UciPucchF0F1 *
+ *            fapi_uci_o_pucch_f0f1_t *
+ * @return ROK     - success
+ *         RFAILED - failure
+ *
+ * ****************************************************************/
+uint8_t OAI_OSC_fillUciIndPucchF0F1(
+    UciPucchF0F1 *pduInfo, nfapi_nr_uci_pucch_pdu_format_0_1_t *nfapiPduInfo) {
+  printf("INFO  -->  FUNC : %s", __FUNCTION__);
+  uint8_t harqIdx;
+  uint8_t ret = ROK;
+
+  pduInfo->handle = nfapiPduInfo->handle;
+  pduInfo->pduBitmap = nfapiPduInfo->pduBitmap;
+  pduInfo->pucchFormat = nfapiPduInfo->pucch_format;
+  pduInfo->ul_cqi = nfapiPduInfo->ul_cqi;
+  pduInfo->crnti = nfapiPduInfo->rnti;
+  pduInfo->timingAdvance = nfapiPduInfo->timing_advance;
+  pduInfo->rssi = nfapiPduInfo->rssi;
+  if (nfapiPduInfo->sr.sr_indication) {
+    pduInfo->srInfo.srIndPres = nfapiPduInfo->sr.sr_indication;
+    pduInfo->srInfo.srConfdcLevel = nfapiPduInfo->sr.sr_confidence_level;
+  }
+  if (nfapiPduInfo->harq.num_harq) {
+    pduInfo->harqInfo.numHarq = nfapiPduInfo->harq.num_harq;
+    pduInfo->harqInfo.harqConfdcLevel =
+        nfapiPduInfo->harq.harq_confidence_level;
+    for (harqIdx = 0; harqIdx < pduInfo->harqInfo.numHarq; harqIdx++) {
+      pduInfo->harqInfo.harqValue[harqIdx] =
+          nfapiPduInfo->harq.harq_list[harqIdx].harq_value;
+    }
+  }
+  return ret;
+}
 
 /*******************************************************************
  *
@@ -326,6 +373,7 @@ uint8_t SCF_procUciInd(nfapi_nr_uci_indication_t  *nfapiUciInd)
    macUciInd->slotInd.sfn = nfapiUciInd->sfn; 
    macUciInd->slotInd.slot = nfapiUciInd->slot;
    macUciInd->numUcis = nfapiUciInd->num_ucis;
+   DU_LOG("\nINFO  -->  LWR_MAC: Number of UCI PDUs %d", macUciInd->numUcis);
 
    for(pduIdx = 0; pduIdx < macUciInd->numUcis; pduIdx++)
    {
@@ -340,7 +388,7 @@ uint8_t SCF_procUciInd(nfapi_nr_uci_indication_t  *nfapiUciInd)
             macUciInd->pdus[pduIdx].pduSize = nfapiUciInd->uci_list[pduIdx].pdu_size;
             pduInfo = &macUciInd->pdus[pduIdx].uci.uciPucchF0F1;
             //TODO: Develop OAI_OSC_fillUciIndPucchF0F1
-            //ret = fillUciIndPucchF0F1(pduInfo, &nfapiUciInd->uci_list[pduIdx].pucch_pdu_format_0_1);
+            ret = OAI_OSC_fillUciIndPucchF0F1(pduInfo, &nfapiUciInd->uci_list[pduIdx].pucch_pdu_format_0_1);
          }
          break;
          case UCI_IND_PUCCH_F2F3F4:
@@ -354,6 +402,7 @@ uint8_t SCF_procUciInd(nfapi_nr_uci_indication_t  *nfapiUciInd)
    if(!ret)
    {
       /*Fill post and sent to MAC*/
+      DU_LOG("\nINFO  -->  LWR_MAC: Sending UCI Indication to MAC");
       FILL_PST_LWR_MAC_TO_MAC(pst, EVENT_UCI_IND_TO_MAC);
       ret = (*sendUciIndOpts[pst.selector])(&pst, macUciInd);
    }

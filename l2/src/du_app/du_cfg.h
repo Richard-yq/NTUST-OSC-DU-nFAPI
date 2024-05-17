@@ -39,7 +39,7 @@
 #endif
 
 #define F1_EGTP_PORT  2152  /* As per the spec 29.281, the registered port number for GTP-U is 2152 */
-#define NR_PCI 1
+#define NR_PCI 0
 #define NR_CELL_ID 1
 
 #define DU_NAME "ORAN OAM DU"
@@ -181,11 +181,17 @@
 #define RA_RSP_WINDOW 10
 
 /* MACRCO Ddefine for PDCCH Configuration */
+// #define PDCCH_SEARCH_SPACE_ID      1    /* Common search space id */
+#ifdef NFAPI
+#define PDCCH_SEARCH_SPACE_ID      0    /* Common search space id */
+#define PDCCH_CTRL_RSRC_SET_ID     1   /* Control resource set id */
+#else
 #define PDCCH_SEARCH_SPACE_ID      1    /* Common search space id */
 #define PDCCH_CTRL_RSRC_SET_ID     0    /* Control resource set id */
-#define PDCCH_SEARCH_SPACE_ID_SIB1 1    /* Search space id for sib1 */
-#define PDCCH_SEARCH_SPACE_ID_PAGING 1  /* Search space id for paging */
-#define PDCCH_SEARCH_SPACE_ID_RA   1    /* Search spaced id for random access */
+#endif
+#define PDCCH_SEARCH_SPACE_ID_SIB1 0    /* Search space id for sib1 */
+#define PDCCH_SEARCH_SPACE_ID_PAGING 0  /* Search space id for paging */
+#define PDCCH_SEARCH_SPACE_ID_RA   0    /* Search spaced id for random access */
 #define PDCCH_SERACH_SPACE_DCI_FORMAT 0
 #define PDCCH_CTRL_RSRC_SET_ONE_ID  1
 #define PDCCH_CTRL_RSRC_SET_ONE_DURATION 2  /* Duration for control resource set id i */

@@ -652,7 +652,7 @@ uint8_t fillSchSib1Cfg(uint8_t mu, uint8_t bandwidth, uint8_t numSlots,SchPdcchC
 
    }
    bwp->freqAlloc.startPrb = 0;
-   bwp->subcarrierSpacing  = 0;         /* 15Khz */
+   bwp->subcarrierSpacing  = 1;         /* 15Khz */
    bwp->cyclicPrefix       = 0;              /* normal */
 
    /* fill the PDCCH PDU */
@@ -660,10 +660,16 @@ uint8_t fillSchSib1Cfg(uint8_t mu, uint8_t bandwidth, uint8_t numSlots,SchPdcchC
    pdcch->coresetCfg.startSymbolIndex = firstSymbol;
    pdcch->coresetCfg.durationSymbols = numSymbols;
    
+   printf("coreSetSize:%d , firstSymbol %d ,numSymbols %d\n",numRbs,firstSymbol,numSymbols);
+
    /* Fill Bitmap for PRBs in coreset */
    fillCoresetFeqDomAllocMap(((offsetPointA-offset)/6), (numRbs/6), FreqDomainResource);
-   covertFreqDomRsrcMapToIAPIFormat(FreqDomainResource, pdcch->coresetCfg.freqDomainResource);
-
+   // covertFreqDomRsrcMapToIAPIFormat(FreqDomainResource, pdcch->coresetCfg.freqDomainResource);
+   memcpy(pdcch->coresetCfg.freqDomainResource, FreqDomainResource, sizeof(FreqDomainResource));
+   pdcch->coresetCfg.freqDomainResource[0]=0xff;
+   for (int i=1;i<6;i++){
+      pdcch->coresetCfg.freqDomainResource[i]=0;
+   }
    pdcch->coresetCfg.cceRegMappingType = 1; /* coreset0 is always interleaved */
    pdcch->coresetCfg.regBundleSize = 6;    /* spec-38.211 sec 7.3.2.2 */
    pdcch->coresetCfg.interleaverSize = 2;  /* spec-38.211 sec 7.3.2.2 */
@@ -682,7 +688,7 @@ uint8_t fillSchSib1Cfg(uint8_t mu, uint8_t bandwidth, uint8_t numSlots,SchPdcchC
    pdcch->dci.beamPdcchInfo.prg[0].pmIdx = 0;
    pdcch->dci.beamPdcchInfo.prg[0].beamIdx[0] = 0;
    pdcch->dci.txPdcchPower.beta_pdcch_1_0= 0;
-   pdcch->dci.txPdcchPower.powerControlOffsetSS = 0;
+   pdcch->dci.txPdcchPower.powerControlOffsetSS = 1;
    /* Storing pdschCfg pointer here. Required to access pdsch config while
       fillig up pdcch pdu */
    pdsch = &pdcch->dci.pdschCfg; 

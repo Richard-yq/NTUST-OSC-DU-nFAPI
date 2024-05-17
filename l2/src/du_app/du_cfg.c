@@ -480,7 +480,7 @@ uint8_t fillServCellCfgCommSib(SrvCellCfgCommSib *srvCellCfgComm)
 #else
    srvCellCfgComm->dlCfg.dlScsCarrier.scsOffset = SSB_SUBCARRIER_OFFSET;
    srvCellCfgComm->dlCfg.dlScsCarrier.scs = NR_SCS;
-   srvCellCfgComm->dlCfg.dlScsCarrier.scsBw = NR_BANDWIDTH;
+   srvCellCfgComm->dlCfg.dlScsCarrier.scsBw = 106;
 #endif   
    srvCellCfgComm->dlCfg.locAndBw = FREQ_LOC_BW;
 
@@ -495,16 +495,16 @@ uint8_t fillServCellCfgCommSib(SrvCellCfgCommSib *srvCellCfgComm)
    SearchSpace__monitoringSlotPeriodicityAndOffset_PR_sl1;
    pdcchCfg.monitorSymbolsInSlot[0] = 128;
    pdcchCfg.monitorSymbolsInSlot[1] = 0;
-   pdcchCfg.numCandAggLvl1 = SearchSpace__nrofCandidates__aggregationLevel1_n8;
-   pdcchCfg.numCandAggLvl2 = SearchSpace__nrofCandidates__aggregationLevel2_n4;
-   pdcchCfg.numCandAggLvl4 = SearchSpace__nrofCandidates__aggregationLevel4_n2;
+   pdcchCfg.numCandAggLvl1 = SearchSpace__nrofCandidates__aggregationLevel1_n0;
+   pdcchCfg.numCandAggLvl2 = SearchSpace__nrofCandidates__aggregationLevel2_n0;
+   pdcchCfg.numCandAggLvl4 = SearchSpace__nrofCandidates__aggregationLevel4_n1;
    pdcchCfg.numCandAggLvl8 = SearchSpace__nrofCandidates__aggregationLevel8_n1;
    pdcchCfg.numCandAggLvl16 = SearchSpace__nrofCandidates__aggregationLevel16_n0;
    pdcchCfg.searchSpcType = SearchSpace__searchSpaceType_PR_common;
    pdcchCfg.commSrchSpcDciFrmt = PDCCH_SERACH_SPACE_DCI_FORMAT;
    pdcchCfg.searchSpcSib1 = PDCCH_SEARCH_SPACE_ID_SIB1;
    pdcchCfg.pagingSearchSpc = PDCCH_SEARCH_SPACE_ID_PAGING;
-   pdcchCfg.raSearchSpc = PDCCH_SEARCH_SPACE_ID_PAGING;
+   pdcchCfg.raSearchSpc = PDCCH_SEARCH_SPACE_ID_RA;
    srvCellCfgComm->dlCfg.pdcchCfg = pdcchCfg;
 
    /* Configuring PDSCH Config Common For SIB1 */
@@ -543,7 +543,7 @@ uint8_t fillServCellCfgCommSib(SrvCellCfgCommSib *srvCellCfgComm)
 #else
    srvCellCfgComm->ulCfg.ulScsCarrier.scsOffset = SSB_SUBCARRIER_OFFSET;
    srvCellCfgComm->ulCfg.ulScsCarrier.scs = NR_SCS;
-   srvCellCfgComm->ulCfg.ulScsCarrier.scsBw = NR_BANDWIDTH;
+   srvCellCfgComm->ulCfg.ulScsCarrier.scsBw = 106;
 #endif   
    srvCellCfgComm->ulCfg.freqBandInd = NR_FREQ_BAND;
    srvCellCfgComm->ulCfg.pMax = UL_P_MAX;

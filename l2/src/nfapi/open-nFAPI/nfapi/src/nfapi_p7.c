@@ -216,7 +216,11 @@ static uint8_t pack_dl_tti_csi_rs_pdu_rel15_value(void *tlv, uint8_t **ppWritePa
 static uint8_t pack_dl_tti_pdcch_pdu_rel15_value(void *tlv, uint8_t **ppWritePackedMsg, uint8_t *end)
 {
   nfapi_nr_dl_tti_pdcch_pdu_rel15_t *value = (nfapi_nr_dl_tti_pdcch_pdu_rel15_t *)tlv;
-
+  printf("pack_dl_tti_pdcch_pdu_rel15_value value->BWPSize:%d\n",value->BWPSize);
+  // value->ShiftIndex = 0;
+  value->BWPSize = 48;
+  value->BWPStart = 27;
+  
   if (!(push16(value->BWPSize, ppWritePackedMsg, end) && push16(value->BWPStart, ppWritePackedMsg, end)
         && push8(value->SubcarrierSpacing, ppWritePackedMsg, end) && push8(value->CyclicPrefix, ppWritePackedMsg, end)
         && push8(value->StartSymbolIndex, ppWritePackedMsg, end) && push8(value->DurationSymbols, ppWritePackedMsg, end)
@@ -260,6 +264,18 @@ static uint8_t pack_dl_tti_pdcch_pdu_rel15_value(void *tlv, uint8_t **ppWritePac
       }
     }
     // TX Power info
+    printf("(origin) PayloadSizeBits:%d\n", value->dci_pdu[i].PayloadSizeBits);
+    for(int j=0;j<8;j++)
+      printf("(origin) Payload:%x\n", value->dci_pdu[i].Payload[j]);
+    value->dci_pdu[i].PayloadSizeBits = 39;
+    value->dci_pdu[i].Payload[0] = 0;
+    value->dci_pdu[i].Payload[1] = 0;
+    value->dci_pdu[i].Payload[2] = 20;
+    value->dci_pdu[i].Payload[3] = 1;
+    value->dci_pdu[i].Payload[4] = 45;
+    value->dci_pdu[i].Payload[5] = 0;
+    value->dci_pdu[i].Payload[6] = 0;
+    value->dci_pdu[i].Payload[7] = 0;
     if (!(push8(value->dci_pdu[i].beta_PDCCH_1_0, ppWritePackedMsg, end)
           && push8(value->dci_pdu[i].powerControlOffsetSS, ppWritePackedMsg, end) &&
           // DCI Payload fields
@@ -275,6 +291,22 @@ static uint8_t pack_dl_tti_pdcch_pdu_rel15_value(void *tlv, uint8_t **ppWritePac
 static uint8_t pack_dl_tti_pdsch_pdu_rel15_value(void *tlv, uint8_t **ppWritePackedMsg, uint8_t *end)
 {
   nfapi_nr_dl_tti_pdsch_pdu_rel15_t *value = (nfapi_nr_dl_tti_pdsch_pdu_rel15_t *)tlv;
+  value->targetCodeRate[0] = 3790;
+  value->mcsIndex[0] = 5;
+  value->TBSize[0] = 129;
+  value->BWPSize = 48;
+  value->BWPStart = 27;
+  value->dataScramblingId = 0;
+  value->refPoint = 1;
+  value->dlDmrsSymbPos = 580;
+  value->dlDmrsScramblingId = 0;
+  value->numDmrsCdmGrpsNoData = 2;
+  value->rbStart = 0;
+  value->rbSize = 16;
+  value->StartSymbolIndex = 2;
+  value->NrOfSymbols = 10;
+  value->precodingAndBeamforming.num_prgs = 0;
+  value->precodingAndBeamforming.prg_size = 0;
 
   if (!(push16(value->pduBitmap, ppWritePackedMsg, end) && push16(value->rnti, ppWritePackedMsg, end)
         && push16(value->pduIndex, ppWritePackedMsg, end) && push16(value->BWPSize, ppWritePackedMsg, end)
@@ -342,9 +374,9 @@ static uint8_t pack_dl_tti_pdsch_pdu_rel15_value(void *tlv, uint8_t **ppWritePac
 
 static uint8_t pack_dl_tti_ssb_pdu_rel15_value(void *tlv, uint8_t **ppWritePackedMsg, uint8_t *end)
 {
-  printf("\nDEBUG  -->  %s() Packing ssb.\n",__FUNCTION__);
   NFAPI_TRACE(NFAPI_TRACE_DEBUG, "Packing ssb. \n");
   nfapi_nr_dl_tti_ssb_pdu_rel15_t *value = (nfapi_nr_dl_tti_ssb_pdu_rel15_t *)tlv;
+  printf("\nDEBUG  -->  %s() Packing ssb. value->bchPayload:%ld\n",__FUNCTION__,(value->bchPayload>>8)& 0xffffff);
 
   if (!(push16(value->PhysCellId, ppWritePackedMsg, end) && push8(value->BetaPss, ppWritePackedMsg, end)
         && push8(value->SsbBlockIndex, ppWritePackedMsg, end) && push8(value->SsbSubcarrierOffset, ppWritePackedMsg, end)
@@ -690,7 +722,6 @@ static uint8_t pack_dl_tti_request_body_value(void *tlv, uint8_t **ppWritePacked
     } break;
   }
   // pack proper size
-  printf("\nStill alive!!!!!!\n");
   uintptr_t msgEnd = (uintptr_t)*ppWritePackedMsg;
   uint16_t packedMsgLen = msgEnd - msgHead;
   value->PDUSize = packedMsgLen;
@@ -861,7 +892,6 @@ static uint8_t pack_dl_tti_request(void *msg, uint8_t **ppWritePackedMsg, uint8_
     }
     return 0;
   }
-  printf("\nDEBUG  --> pack_dl_tti_request doen ~~~~~\n");
   return 1;
 }
 
@@ -3695,7 +3725,6 @@ int nfapi_nr_p7_message_pack(void *pMessageBuf, void *pPackedBuf, uint32_t packe
       break;
 
     case NFAPI_NR_PHY_MSG_TYPE_UL_TTI_REQUEST:
-    printf("\nDEBUG  -->  I am here pack_ul_tti_request\n");
       result = pack_ul_tti_request(pMessageHeader, &pWritePackedMessage, end, config);
       break;
 

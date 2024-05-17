@@ -2118,14 +2118,14 @@ uint8_t lwr_mac_procConfigReqEvt(void *msg)
    fillMsgHeader(&configReq->header, FAPI_CONFIG_REQUEST, sizeof(fapi_config_req_t));
 /* ======== small cell integration ======== */
 #ifdef NFAPI
-   #ifdef NR_TDD
-      configReq->number_of_tlvs = 28 + 140;
-   #else
-      configReq->number_of_tlvs = 26;
-   #endif
+#ifdef NR_TDD
+   configReq->number_of_tlvs = 30 + 140;
+#else
+   configReq->number_of_tlvs = 26;
+#endif
 #else
    configReq->number_of_tlvs = 24;
-#endif 
+#endif
 /* ======================================== */
 
    msgLen = sizeof(configReq->number_of_tlvs);
@@ -2166,7 +2166,7 @@ uint8_t lwr_mac_procConfigReqEvt(void *msg)
    /* fill SSB configuration */
    fillTlvs(&configReq->tlvs[index++], FAPI_SS_PBCH_POWER_TAG,             \
          sizeof(uint32_t), macCfgParams.ssbCfg.ssbPbchPwr, &msgLen);
-   //fillTlvs(&configReq->tlvs[index++], FAPI_BCH_PAYLOAD_TAG,               \
+   fillTlvs(&configReq->tlvs[index++], FAPI_BCH_PAYLOAD_TAG,               \
    sizeof(uint8_t), macCfgParams.ssbCfg.bchPayloadFlag, &msgLen);
    fillTlvs(&configReq->tlvs[index++], FAPI_SCS_COMMON_TAG,                \
          sizeof(uint8_t), macCfgParams.ssbCfg.scsCmn, &msgLen);
@@ -2184,7 +2184,7 @@ uint8_t lwr_mac_procConfigReqEvt(void *msg)
          sizeof(uint8_t), macCfgParams.prachCfg.prachCfgIdx, &msgLen);
    fillTlvs(&configReq->tlvs[index++], FAPI_PRACH_ROOT_SEQUENCE_INDEX_TAG, \
          sizeof(uint16_t), macCfgParams.prachCfg.fdm[0].rootSeqIdx, &msgLen);
-   //fillTlvs(&configReq->tlvs[index++], FAPI_NUM_ROOT_SEQUENCES_TAG,        \
+   fillTlvs(&configReq->tlvs[index++], FAPI_NUM_ROOT_SEQUENCES_TAG,        \
    sizeof(uint8_t), macCfgParams.prachCfg.fdm[0].numRootSeq, &msgLen);
    fillTlvs(&configReq->tlvs[index++], FAPI_K1_TAG,                        \
          sizeof(uint16_t), macCfgParams.prachCfg.fdm[0].k1, &msgLen);
@@ -4288,7 +4288,7 @@ uint8_t OAI_OSC_fillSib1TxDataReq(nfapi_nr_pdu_t *pduDesc, uint16_t pduIndex, Ma
    pduDesc[pduIndex].num_TLV = 1;
 
    /* fill the TLV */
-   payloadSize = pdschCfg->codeword[0].tbSize;
+   payloadSize = pdschCfg->codeword[0].tbSize+6;
    // pduDesc[pduIndex].TLVs[0].tag = ((payloadSize & 0xff0000) >> 8) | FAPI_TX_DATA_PTR_TO_PAYLOAD_32; //pack ptr
    // pduDesc[pduIndex].TLVs[0].tag = FAPI_TX_DATA_PTR_TO_PAYLOAD_32;FAPI_TX_DATA_PAYLOAD
    pduDesc[pduIndex].TLVs[0].tag = FAPI_TX_DATA_PAYLOAD;
@@ -4298,7 +4298,7 @@ uint8_t OAI_OSC_fillSib1TxDataReq(nfapi_nr_pdu_t *pduDesc, uint16_t pduIndex, Ma
    {
       return RFAILED;
    }
-   memcpy(sib1Payload, macCellCfg->cellCfg.sib1Cfg.sib1Pdu, macCellCfg->cellCfg.sib1Cfg.sib1PduLen);
+   memcpy(sib1Payload,   macCellCfg->cellCfg.sib1Cfg.sib1Pdu, macCellCfg->cellCfg.sib1Cfg.sib1PduLen);
    
    memcpy(pduDesc[pduIndex].TLVs[0].value.direct, sib1Payload, payloadSize);
    // pduDesc[pduIndex].TLVs[0].value.direct = sib1Payload;
@@ -4383,7 +4383,7 @@ uint8_t OAI_OSC_fillRarTxDataReq(nfapi_nr_pdu_t *pduDesc, uint16_t pduIndex, Rar
    pduDesc[pduIndex].num_TLV = 1;
 
    /* fill the TLV */
-   payloadSize = pdschCfg->codeword[0].tbSize;
+   payloadSize = pdschCfg->codeword[0].tbSize+6;
    pduDesc[pduIndex].TLVs[0].tag = FAPI_TX_DATA_PTR_TO_PAYLOAD_32; //pack ptr
    pduDesc[pduIndex].TLVs[0].length = payloadSize;
    LWR_MAC_ALLOC(rarPayload, payloadSize);
@@ -4429,7 +4429,7 @@ uint8_t OAI_OSC_fillDlMsgTxDataReq(nfapi_nr_pdu_t *pduDesc, uint16_t pduIndex, D
    pduDesc[pduIndex].num_TLV = 1;
 
    /* fill the TLV */
-   payloadSize = pdschCfg->codeword[0].tbSize;
+   payloadSize = pdschCfg->codeword[0].tbSize+6;
    pduDesc[pduIndex].TLVs[0].tag = FAPI_TX_DATA_PTR_TO_PAYLOAD_32; //pack ptr
    pduDesc[pduIndex].TLVs[0].length = payloadSize;
    LWR_MAC_ALLOC(dlMsgPayload, payloadSize);

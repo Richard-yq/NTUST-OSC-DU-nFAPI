@@ -376,13 +376,12 @@ static uint8_t pack_dl_tti_ssb_pdu_rel15_value(void *tlv, uint8_t **ppWritePacke
 {
   NFAPI_TRACE(NFAPI_TRACE_DEBUG, "Packing ssb. \n");
   nfapi_nr_dl_tti_ssb_pdu_rel15_t *value = (nfapi_nr_dl_tti_ssb_pdu_rel15_t *)tlv;
-  printf("\nDEBUG  -->  %s() Packing ssb. value->bchPayload:%ld\n",__FUNCTION__,(value->bchPayload>>8)& 0xffffff);
-
   if (!(push16(value->PhysCellId, ppWritePackedMsg, end) && push8(value->BetaPss, ppWritePackedMsg, end)
         && push8(value->SsbBlockIndex, ppWritePackedMsg, end) && push8(value->SsbSubcarrierOffset, ppWritePackedMsg, end)
         && push16(value->ssbOffsetPointA, ppWritePackedMsg, end) && push8(value->bchPayloadFlag, ppWritePackedMsg, end)
-        && push8((value->bchPayload >> 16) & 0xff, ppWritePackedMsg, end)
-        && push8((value->bchPayload >> 8) & 0xff, ppWritePackedMsg, end) && push8(value->bchPayload & 0xff, ppWritePackedMsg, end)
+        && push8((value->bchPayload >> 24) & 0xff, ppWritePackedMsg, end)
+        && push8((value->bchPayload >> 16) & 0xff, ppWritePackedMsg, end) 
+        && push8((value->bchPayload >> 8) & 0xff, ppWritePackedMsg, end)
         && push8(0, ppWritePackedMsg, end) &&
         // TODO add Tx Power Info
         push8(0, ppWritePackedMsg, end) && push8(0, ppWritePackedMsg, end)

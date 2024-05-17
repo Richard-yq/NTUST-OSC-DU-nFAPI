@@ -28,7 +28,13 @@
 #define SCH_NUM_SC_PRB 12 /* number of SCs in a PRB */
 #define SCH_MAX_SSB_BEAM 8 /* since we are supporting only SCS=15KHz and 30KHz */
 #define SCH_SSB_NUM_SYMB 4
+/* ======== small cell integration ======== */
+#ifdef NFAPI
+#define SCH_SSB_NUM_PRB 20 
+#else
 #define SCH_SSB_NUM_PRB 21 /* One extra PRB as buffer */
+#endif
+/* ======================================== */
 #define SCHED_DELTA 1
 #define BO_DELTA 1
 #define RAR_DELAY   2

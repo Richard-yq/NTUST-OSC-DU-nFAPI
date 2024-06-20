@@ -175,6 +175,7 @@ help:
 		@echo -e "$(OPTS)    PHY=INTEL_L1         - If not specified, Phy stub is used$(NORM)"
 		@echo -e "$(OPTS)    PHY_MODE=TIMER       - Testing mode for INTEL_L1"
 		@echo -e "$(OPTS)    COVERAGE=ENABLE      - To record the code coverage stats. Disabled by default"
+		@echo -e "$(OPTS)    NFAPI=YES            - nFAPI mode for OAI Layer1"
 		@echo -e "******************************************************************"
 
 prepare_dirs:

@@ -187,7 +187,9 @@ static void match_crc_rx_pdu(nfapi_nr_rx_data_indication_t *rx_ind, nfapi_nr_crc
     {
       printf("requeue failed for crc_ind_unmatched.\n");
       free(crc_ind_unmatched->crc_list);
+	  crc_ind_unmatched->crc_list = NULL;
       free(crc_ind_unmatched);
+	  crc_ind_unmatched	= NULL;
     }
   }
   else if (crc_ind->number_crcs < rx_ind->number_of_pdus) {
@@ -214,7 +216,9 @@ static void match_crc_rx_pdu(nfapi_nr_rx_data_indication_t *rx_ind, nfapi_nr_crc
     {
       printf("requeue failed for rx_ind_unmatched.\n");
       free(rx_ind_unmatched->pdu_list);
+	  rx_ind_unmatched->pdu_list = NULL;
       free(rx_ind_unmatched);
+	  rx_ind_unmatched	= NULL;
     }
   }
   else {

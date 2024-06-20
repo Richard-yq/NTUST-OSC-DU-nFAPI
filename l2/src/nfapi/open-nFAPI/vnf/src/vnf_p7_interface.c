@@ -106,6 +106,40 @@ struct timespec timespec_sub(struct timespec lhs, struct timespec rhs)
 }
 
 /* ======== small cell integration ======== */
+static bool rx_ind_has_rnti(nfapi_nr_rx_data_indication_t *rx_ind, uint16_t rnti) {
+  for (int i = 0; i < rx_ind->number_of_pdus; i++) {
+    if (rnti == rx_ind->pdu_list[i].rnti) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void remove_crc_pdu(nfapi_nr_crc_indication_t *crc_ind, int index) {
+  memmove(crc_ind->crc_list + index,
+          crc_ind->crc_list + index + 1,
+          sizeof(*crc_ind->crc_list) * (crc_ind->number_crcs - index - 1));
+  crc_ind->number_crcs--;
+}
+
+static bool crc_ind_has_rnti(nfapi_nr_crc_indication_t *crc_ind, uint16_t rnti) {
+  for (int i = 0; i < crc_ind->number_crcs; i++) {
+    if (rnti == crc_ind->crc_list[i].rnti) {
+      return true;
+    }
+  }
+  return false;
+}
+
+static void remove_rx_pdu(nfapi_nr_rx_data_indication_t *rx_ind, int index) {
+  memmove(rx_ind->pdu_list + index,
+          rx_ind->pdu_list + index + 1,
+          sizeof(*rx_ind->pdu_list) * (rx_ind->number_of_pdus - index - 1));
+  rx_ind->number_of_pdus--;
+}
+/* ======================================== */
+
+/* ======== small cell integration ======== */
 static bool crc_sfn_slot_matcher(void *wanted, void *candidate)
 {
   nfapi_p7_message_header_t *msg = candidate;

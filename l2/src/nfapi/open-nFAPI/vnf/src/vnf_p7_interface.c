@@ -105,6 +105,28 @@ struct timespec timespec_sub(struct timespec lhs, struct timespec rhs)
 	return result;
 }
 
+/* ======== small cell integration ======== */
+static bool crc_sfn_slot_matcher(void *wanted, void *candidate)
+{
+  nfapi_p7_message_header_t *msg = candidate;
+  int sfn_sf = *(int*)wanted;
+
+  switch (msg->message_id)
+  {
+    case NFAPI_NR_PHY_MSG_TYPE_CRC_INDICATION:
+    {
+      nfapi_nr_crc_indication_t *ind = candidate;
+      return NFAPI_SFNSLOT2SFN(sfn_sf) == ind->sfn && NFAPI_SFNSLOT2SLOT(sfn_sf) == ind->slot;
+    }
+
+    default:
+      printf("sfn_slot_match bad ID: %d\n", msg->message_id);
+
+  }
+  return false;
+}
+/* ======================================== */
+
 // monitor the p7 endpoints and the timing loop and
 // send indications to mac
 int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)

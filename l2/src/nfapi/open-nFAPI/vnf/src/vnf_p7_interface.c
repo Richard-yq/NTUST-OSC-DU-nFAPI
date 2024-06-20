@@ -161,6 +161,69 @@ static bool crc_sfn_slot_matcher(void *wanted, void *candidate)
 }
 /* ======================================== */
 
+/* ======== small cell integration ======== */
+static void match_crc_rx_pdu(nfapi_nr_rx_data_indication_t *rx_ind, nfapi_nr_crc_indication_t *crc_ind) {
+  if (crc_ind->number_crcs > rx_ind->number_of_pdus) {
+    int num_unmatched_crcs = 0;
+    nfapi_nr_crc_indication_t *crc_ind_unmatched = calloc(1, sizeof(*crc_ind_unmatched));
+    crc_ind_unmatched->header = crc_ind->header;
+    crc_ind_unmatched->sfn = crc_ind->sfn;
+    crc_ind_unmatched->slot = crc_ind->slot;
+    crc_ind_unmatched->number_crcs = crc_ind->number_crcs - rx_ind->number_of_pdus;
+    crc_ind_unmatched->crc_list = calloc(crc_ind_unmatched->number_crcs, sizeof(nfapi_nr_crc_t));
+    for (int i = 0; i < crc_ind->number_crcs; i++) {
+      if (!rx_ind_has_rnti(rx_ind, crc_ind->crc_list[i].rnti)) {
+          printf("crc_ind->crc_list[%d].rnti %x does not match any rx_ind pdu rnti\n",
+                i, crc_ind->crc_list[i].rnti);
+          crc_ind_unmatched->crc_list[num_unmatched_crcs] = crc_ind->crc_list[i];
+          num_unmatched_crcs++;
+          remove_crc_pdu(crc_ind, i);
+      }
+      if (crc_ind->number_crcs == rx_ind->number_of_pdus) {
+        break;
+      }
+    }
+    if (!requeue(&gnb_crc_ind_queue, crc_ind_unmatched))
+    {
+      printf("requeue failed for crc_ind_unmatched.\n");
+      free(crc_ind_unmatched->crc_list);
+      free(crc_ind_unmatched);
+    }
+  }
+  else if (crc_ind->number_crcs < rx_ind->number_of_pdus) {
+    int num_unmatched_rxs = 0;
+    nfapi_nr_rx_data_indication_t *rx_ind_unmatched = calloc(1, sizeof(*rx_ind_unmatched));
+    rx_ind_unmatched->header = rx_ind->header;
+    rx_ind_unmatched->sfn = rx_ind->sfn;
+    rx_ind_unmatched->slot = rx_ind->slot;
+    rx_ind_unmatched->number_of_pdus = rx_ind->number_of_pdus - crc_ind->number_crcs;
+    rx_ind_unmatched->pdu_list = calloc(rx_ind_unmatched->number_of_pdus, sizeof(nfapi_nr_pdu_t));
+    for (int i = 0; i < rx_ind->number_of_pdus; i++) {
+      if (!crc_ind_has_rnti(crc_ind, rx_ind->pdu_list[i].rnti)) {
+        printf("rx_ind->pdu_list[%d].rnti %d does not match any crc_ind pdu rnti\n",
+              i, rx_ind->pdu_list[i].rnti);
+        rx_ind_unmatched->pdu_list[num_unmatched_rxs] = rx_ind->pdu_list[i];
+        num_unmatched_rxs++;
+        remove_rx_pdu(rx_ind, i);
+      }
+      if (rx_ind->number_of_pdus == crc_ind->number_crcs) {
+        break;
+      }
+    }
+    if (!requeue(&gnb_rx_ind_queue, rx_ind_unmatched))
+    {
+      printf("requeue failed for rx_ind_unmatched.\n");
+      free(rx_ind_unmatched->pdu_list);
+      free(rx_ind_unmatched);
+    }
+  }
+  else {
+    printf("The number of crc pdus %d = the number of rx pdus %d\n",
+          crc_ind->number_crcs, rx_ind->number_of_pdus);
+  }
+}
+/* ======================================== */
+
 // monitor the p7 endpoints and the timing loop and
 // send indications to mac
 int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)

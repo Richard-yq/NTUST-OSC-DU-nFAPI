@@ -377,14 +377,15 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 					SCF_procRachInd(&UL_INFO.rach_ind);
 					UL_INFO.rach_ind.number_of_pdus = 0;
 				}
-				// SCF_procCrcInd(&UL_INFO.crc_ind);
 				if (UL_INFO.uci_ind.num_ucis > 0){
 					SCF_procUciInd(&UL_INFO.uci_ind);
 					UL_INFO.uci_ind.num_ucis = 0;
 				}
-				if (UL_INFO.rx_ind.number_of_pdus > 0){
+				if (UL_INFO.rx_ind.number_of_pdus > 0 && UL_INFO.crc_ind.number_crcs > 0){
 					SCF_procRxDataInd(&UL_INFO.rx_ind);
+					SCF_procCrcInd(&UL_INFO.crc_ind);
 					UL_INFO.rx_ind.number_of_pdus = 0;
+					UL_INFO.crc_ind.number_crcs = 0;
 				}
 				prev_slot = UL_INFO.slot;
 			}

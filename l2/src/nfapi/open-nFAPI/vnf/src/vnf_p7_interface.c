@@ -324,11 +324,24 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 			nfapi_nr_rx_data_indication_t *rx_ind = get_queue(&gnb_rx_ind_queue);
 			// printf("[NTUST]	rx indication: %d\n", rx_ind);
 			printf("[NTUST]	rx indication: %d, size: %d\n", rx_ind, gnb_rx_ind_queue.num_items);
-			UL_INFO.rx_ind = *rx_ind;
 			// TODO: Check how to use CRC indication
-			// nfapi_nr_crc_indication_t *crc_ind = get_queue(&gnb_crc_ind_queue);
-			// printf("[NTUST]	crc indication: %d\n", crc_ind);
-			// printf("[NTUST]	crc indication: %d, size: %d\n", crc_ind, gnb_crc_ind_queue.num_items);
+			int sfn_slot = NFAPI_SFNSLOT2HEX(rx_ind->sfn, rx_ind->slot);
+      		nfapi_nr_crc_indication_t *crc_ind = unqueue_matching(&gnb_crc_ind_queue,
+                                 MAX_QUEUE_SIZE,
+                                 crc_sfn_slot_matcher,
+                                 &sfn_slot);
+			if (!crc_ind) {
+				printf("No crc indication with the same SFN SLOT of rx indication %u %u\n", rx_ind->sfn, rx_ind->slot);
+				requeue(&gnb_rx_ind_queue, rx_ind);
+      		}
+			else {
+				// printf("[NTUST]	crc indication: %d\n", crc_ind);
+				printf("[NTUST]	crc indication: %d, size: %d\n", crc_ind, gnb_crc_ind_queue.num_items);
+				if (crc_ind->number_crcs != rx_ind->number_of_pdus)
+					match_crc_rx_pdu(rx_ind, crc_ind);  
+				UL_INFO.rx_ind = *rx_ind;
+				UL_INFO.crc_ind = *crc_ind;
+			}
 		}
 		if (gnb_uci_ind_queue.num_items > 0) {
 			nfapi_nr_uci_indication_t *uci_ind = get_queue(&gnb_uci_ind_queue);

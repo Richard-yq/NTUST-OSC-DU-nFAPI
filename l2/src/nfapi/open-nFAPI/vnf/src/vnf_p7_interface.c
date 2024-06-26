@@ -317,18 +317,14 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 		/* ======== small cell integration ======== */
 		
 		nfapi_nr_slot_indication_scf_t *slot_ind = get_queue(&gnb_slot_ind_queue);
-		// printf("\n[DEBUG]	Slot indication: %d\n", slot_ind);
 		if (gnb_rach_ind_queue.num_items > 0) {
 			nfapi_nr_rach_indication_t *rach_ind = get_queue(&gnb_rach_ind_queue);
-			// printf("[NTUST]	rach indication: %d\n", rach_ind);
 			UL_INFO.rach_ind = *rach_ind;
-			printf("[NTUST]	rach indication: %d, size: %d\n", rach_ind, gnb_rach_ind_queue.num_items);
+			printf("[DEBUG]	get_queue rach indication: %d\n", rach_ind);
 		}
 		if (gnb_rx_ind_queue.num_items > 0 && gnb_crc_ind_queue.num_items > 0) {
 			nfapi_nr_rx_data_indication_t *rx_ind = get_queue(&gnb_rx_ind_queue);
-			// printf("[NTUST]	rx indication: %d\n", rx_ind);
-			printf("[NTUST]	rx indication: %d, size: %d\n", rx_ind, gnb_rx_ind_queue.num_items);
-			// TODO: Check how to use CRC indication
+			printf("[DEBUG]	get_queue rx indication: %d\n", rx_ind);
 			int sfn_slot = NFAPI_SFNSLOT2HEX(rx_ind->sfn, rx_ind->slot);
       		nfapi_nr_crc_indication_t *crc_ind = unqueue_matching(&gnb_crc_ind_queue,
                                  MAX_QUEUE_SIZE,
@@ -339,8 +335,7 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 				requeue(&gnb_rx_ind_queue, rx_ind);
       		}
 			else {
-				// printf("[NTUST]	crc indication: %d\n", crc_ind);
-				printf("[NTUST]	crc indication: %d, size: %d\n", crc_ind, gnb_crc_ind_queue.num_items);
+				printf("[DEBUG]	get_queue crc indication: %d\n", crc_ind);
 				if (crc_ind->number_crcs != rx_ind->number_of_pdus)
 					match_crc_rx_pdu(rx_ind, crc_ind);  
 				UL_INFO.rx_ind = *rx_ind;
@@ -349,20 +344,13 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 		}
 		if (gnb_uci_ind_queue.num_items > 0) {
 			nfapi_nr_uci_indication_t *uci_ind = get_queue(&gnb_uci_ind_queue);
-			// printf("[NTUST]	uci indication: %d\n", uci_ind);
-			printf("[NTUST]	uci indication: %d, size: %d\n", uci_ind, gnb_uci_ind_queue.num_items);
+			printf("[DEBUG]	get_queue uci indication: %d\n", uci_ind);
 			UL_INFO.uci_ind = *uci_ind;
 		}
-		// NFAPI_TRACE(NFAPI_TRACE_DEBUG, "This is the slot_ind queue size %ld in %s():%d\n", gnb_slot_ind_queue.num_items, __FUNCTION__, __LINE__);
 		if (slot_ind) {
 			pthread_mutex_lock(&UL_INFO_mutex);
 			UL_INFO.frame     = slot_ind->sfn;
 			UL_INFO.slot      = slot_ind->slot;
-			// TODO: Fill UL_INFO.indication value
-			// printf("\n [NTUST] UL_INOF->rx_ind number_of_pdus:%d",&UL_INFO->rx_ind.number_of_pdus);
-			// printf("\n [NTUST] UL_INOF->crc_ind number_of_pdus:%d",&UL_INFO->crc_ind.number_of_pdus);
-			// printf("\n [NTUST] UL_INOF->uci_ind number_of_pdus:%d",&UL_INFO->uci_ind.number_of_pdus);
-			// printf("\n [NTUST] UL_INOF->rach_ind number_of_pdus:%d",&UL_INFO->rach_ind.number_of_pdus);
 
 
 			printf("[NFAPI_TRACE_DEBUG]  UL_INFO.frame = %d and slot %d, prev_slot = %d, setup_time = %d\n",
@@ -374,7 +362,6 @@ int nfapi_nr_vnf_p7_start(nfapi_vnf_p7_config_t* config)
 				UL_INFO.module_id = 0; // OAI default setting
 				UL_INFO.CC_id     = 0; // OAI default setting
 				SCF_procSlotInd(&UL_INFO);
-				printf("\n[NTUST] Finish SCF_procSlotInd(&UL_INFO);");
 
 				//TODO: Add switch case CRC、RACH、UCI、RX
 				if (UL_INFO.rach_ind.number_of_pdus > 0){

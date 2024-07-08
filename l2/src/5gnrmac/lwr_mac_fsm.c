@@ -6006,11 +6006,11 @@ uint16_t OAI_OSC_fillDlTtiReq(SlotTimingInfo currTimingInfo)
 #endif
          /* OAI L1 expects UL_TTI.request following DL_TTI.request */
          //TODO: OAI_OSC_fillUlTtiReq done
-         OAI_OSC_fillUlTtiReq(currTimingInfo);
+         // OAI_OSC_fillUlTtiReq(currTimingInfo);
 
          /* OAI L1 expects UL_DCI.request following DL_TTI.request */
          //TODO: OAI_OSC_fillUlDciReq done
-         OAI_OSC_fillUlDciReq(dlTtiReqTimingInfo);
+         // OAI_OSC_fillUlDciReq(dlTtiReqTimingInfo);
       }
       memset(currDlSlot, 0, sizeof(MacDlSlot));
             return ROK;
